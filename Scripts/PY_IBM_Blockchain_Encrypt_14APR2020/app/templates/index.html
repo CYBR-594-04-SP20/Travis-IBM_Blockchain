@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<head>
+    <p class="a">Machine #1 (port: 5000)</p>
+
+    <style>
+ p.a {
+
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-size: 50px;
+  text-align: center;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+
+        $(document).ready(function(){
+        $("#mine").click(function(){
+        $.getJSON("http://127.0.0.1:5000/mine", function(result){
+
+        var index = result.index;
+        var message = result.message;
+        var previous_hash = result.previous_hash;
+        var proof = result.proof;
+
+        var amount = result.transactions[0].amount;
+        var recipient = result.transactions[0].recipient;
+        var sender = result.transactions[0].sender;
+        $("#modal").append( '<br />' + "index: " + index + '<br />' +
+                     "message: " + message + '<br />' +
+                     "previous_hash: " + previous_hash + '<br />' +
+                     "proof: " + proof + '<br />' +
+                     "amount: " + amount  + '<br />' +
+                     "recipient's hashed address: " + recipient  + '<br />' +
+                     "sender: " + sender + '<br />'
+                     + "======================================================================" +
+                     '<br />');
+           });
+          });
+         });
+
+        $(document).ready(function(){
+        $("#chain").click(function(){
+        $.getJSON("http://127.0.0.1:5000/chain", function(result){
+        $.each(result.chain, function(i, field){
+         var index = field.index;
+         var previous_hash = field.previous_hash;
+         var proof = field.proof;
+         var timestamp = field.timestamp;
+         var amount = 0;
+         var recipient = "";
+         var sender = "";
+
+         if(field.transactions.length > 0 ){
+         amount = field.transactions[0].amount;
+         recipient = field.transactions[0].recipient;
+         sender = field.transactions[0].sender;
+         }
+
+
+
+         $("#chainmodal").append("index: " + index + '<br />' +
+                        "previous_hash: "  + previous_hash + '<br />' +
+                        "proof: " + proof + '<br />' +
+                        "timestamp: " + timestamp + '<br />' +
+                        "amount: " + amount + '<br />' +
+                         "recipient: " + recipient + '<br />' +
+                         "sender: " + sender + '<br />'
+                         + "======================================================================" +
+                        '<br />');
+            });
+           });
+          });
+         });
+
+
+
+
+
+        $(document).ready(function(){
+        $("#resolve").click(function(){
+        $.getJSON("http://localhost:5000/nodes/resolve", function(result){
+        $.each(result.chain, function(i, field){
+         var index = field.index;
+         var previous_hash = field.previous_hash;
+         var proof = field.proof;
+         var timestamp = field.timestamp;
+         var amount = 0;
+         var recipient = "";
+         var sender = "";
+
+         if(field.transactions.length > 0 ){
+         amount = field.transactions[0].amount;
+         recipient = field.transactions[0].recipient;
+         sender = field.transactions[0].sender;
+         }
+
+
+
+         $("#resolvetag").append("index: " + index + '<br />' +
+                        "previous_hash: "  + previous_hash + '<br />' +
+                        "proof: " + proof + '<br />' +
+                        "timestamp: " + timestamp + '<br />' +
+                        "amount: " + amount + '<br />' +
+                         "recipient: " + recipient + '<br />' +
+                         "sender: " + sender + '<br />'
+                         + "======================================================================" +
+                        '<br />');
+            });
+           });
+          });
+         });
+
+
+
+         $(document).ready(function() {
+            $("#register").click(function() {
+
+                var value = { "nodes": [document.getElementById("node").value] };
+                var formData = JSON.stringify(value);
+
+                $.ajax({
+
+                type: "POST",
+                url: "http://127.0.0.1:5000/nodes/register",
+                data: formData,
+                dataType: "json",
+
+                contentType: 'application/json; charset=utf-8',
+                success: function(result) {
+
+                var message = result.message;
+                var nodes = result.total_nodes[0];
+                console.log(message);
+                console.log(nodes);
+                alert("Congratulations " + message + " " + nodes);
+                $("#div").html(message);}
+                });
+               });
+               });
+
+
+</script>
+</head>
+
+<body>
+
+
+<img src="background.jpg"
+     style="width:100%;height:100%;position:absolute;top:0;left:0;z-index:-5000;">
+
+<div id= "modal" class="container">
+
+<label for="node">Node IP:</label><br>
+<input type="text" name="node" id="node" /><br><br>
+<input type="button" class="btn btn-info btn-lg" name="sub" id="register" value="Register a Node" />
+
+
+<button id = "mine"  class="btn btn-info btn-lg" >Mine a Block</button>
+
+  <!-- Trigger the modal with a button -->
+  <button type="button" id = "chain" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Show Chain</button>
+<button type="button" id = "resolve" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myResolve">Resolve</button>
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Machine #1 Chain Display</h4>
+        </div>
+        <div class="modal-body" id="chainmodal">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button"  class="btn btn-default" data-dismiss="modal">Close</button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="myResolve" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">[Resolved] Machine #1 Chain Display</h4>
+        </div>
+        <div class="modal-body" id="resolvetag">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
+
+</div>
+
+
+</body>
+</html>
+
